@@ -1,4 +1,5 @@
 swagger: "2.0"
+
 info:
   version: 1.0.0
   title: acceloexperiment
@@ -11,129 +12,292 @@ info:
   license:
     name: GPL
     url: https://github.com/r-k-b/acceloexperiment/blob/master/LICENSE
+
 host: YOURDEPLOYMENTNAME.api.accelo.com
+
 basePath: /api/v0
+
 schemes:
   - https
+
 consumes:
   - application/json
+
 produces:
   - application/json
   - text/xml
   - text/x-yaml
+
+parameters:
+  page:
+    name: _page
+    in: query
+    description: The page of the list to display. For example, 5 will display the fifth page. Each page contains 10 resources.
+    required: false
+    type: integer
+    
+  limit:
+    name: _limit
+    in: query
+    description: The maximum number of items to return.
+    required: false
+    type: integer
+    default: 10
+    maximum: 50
+    
+  offset:
+    name: _offset
+    in: query
+    description: |
+      The position in the list of resources to return from. 
+      For example, if you had 20 resources and requested an offset of 10. Resources 10 to 19 would be returned.
+      Offset cannot be used in conjunction with _page.
+    required: false
+    type: integer
+    default: 0
+    
+  objectBudgetFields:
+    name: _fields
+    in: query
+    description: Allows you to specify optional fields and linked objects to include in the response.
+    required: false
+    type: array
+    items:
+      type: string
+      collectionFormat: csv
+      # what, no allowMultiple?
+      enum:
+      - object_table
+      - object_id or object
+      - is_billable
+      - service_time
+      - service_price
+      - service_price_subtotal
+      - expense_price
+      - material_price
+      - billable
+      - nonbillable
+      - logged
+      - charged
+      - service_time_estimate
+      - service_time_subtotal_estimate
+      - service_price_estimate
+      - service_price_subtotal_estimate
+      - remaining_subtotal
+      - billable_subtotal
+      - nonbillable_subtotal
+      - logged_subtotal
+      - charged_subtotal
+
 paths:
   /object_budgets:
     get:
       description: |
         Returns an array of objectBudgets.
+        
+        ⚠ Object budgets were introduced with the projects upgrade and are different from 
+        [the standard budgets.](https://affinitylive.jira.com/wiki/display/APIS/Budgets)
       operationId: findObjectBudgets
       externalDocs:
         description: Official documentation.
         url: https://affinitylive.jira.com/wiki/display/APIS/GET+object_budgets
       parameters:
-        - name: _page
-          in: query
-          description: The page of the list to display. For example, 5 will display the fifth page. Each page contains 10 resources.
-          required: false
-          type: integer
-        - name: _limit
-          in: query
-          description: The maximum number of items to return.
-          required: false
-          type: integer
-          default: 10
-          maximum: 50
-        - name: _offset
-          in: query
-          description: |
-            The position in the list of resources to return from. 
-            For example, if you had 20 resources and requested an offset of 10. Resources 10 to 19 would be returned.
-            Offset cannot be used in conjunction with _page.
-          required: false
-          type: integer
-          default: 0
-        - name: _fields
-          in: query
-          description: Allows you to specify optional fields and linked objects to include in the response.
-          required: false
-          type: array
-          items:
-            type: string
-            enum: [clueless, lazy, adventurous, aggressive]
-          collectionFormat: csv
+        - $ref: "#/parameters/page"
+        - $ref: "#/parameters/limit"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/objectBudgetFields"
       responses:
         200:
-          description: pet response
+          description: objectBudgetListResponse
           schema:
-            type: array
-            items:
-              $ref: '#/definitions/Pet'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/objectBudgetListResponse'
+            
   /object_budgets/{id}:
     get:
-      description: Returns a user based on a single ID, if the user does not have access to the pet
-      operationId: find pet by id
+      description: Find an object budget by its ID.
+      operationId: find objectBudget by id
       parameters:
         - name: id
           in: path
-          description: ID of pet to fetch
+          description: ID of objectBudget
           required: true
           type: integer
           format: int64
       responses:
         200:
-          description: pet response
+          description: objectBudget response
           schema:
-            $ref: '#/definitions/Pet'
-        default:
-          description: unexpected error
-          schema:
-            $ref: '#/definitions/Error'
-    delete:
-      description: deletes a single pet based on the ID supplied
-      operationId: deletePet
-      parameters:
-        - name: id
-          in: path
-          description: ID of pet to delete
-          required: true
-          type: integer
-          format: int64
+            $ref: '#/definitions/objectBudgetResponse'
+            
+  /object_budgets/count:
+    get:
+      description: Returns the number of object budgets on the deployment.
+      operationId: count all objectBudgets
       responses:
-        204:
-          description: pet deleted
-        default:
-          description: unexpected error
+        200:
+          description: count all objectBudgets response
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/objectBudgetCountResponse'
+
 definitions:
-  Pet:
-    allOf:
-      - $ref: '#/definitions/NewPet'
-      - required:
-        - id
+        
+  Response:
+    type: object
+    description: Default API response
+    required:
+      - meta
+      - response
+    properties:
+      meta:
+        type: object
+        required:
+          - status
+          - message
         properties:
-          id:
-            type: integer
-            format: int64
-  NewPet:
-    required:
-      - name
+          status:
+            description: Response status `ok` or ...?
+            type: string
+            enum: ["ok", "error"]
+          message:
+            description: A longer explanation of the result.
+            type: string
+      response:
+        description: Result body
+        type: ["object", "null"]
+    example:
+      response:
+        foo: "bar"
+      meta:
+        status: "ok"
+        message: "Everything executed as expected."
+
+  objectBudget:
     properties:
-      name:
-        type: string
-      tag:
-        type: string
-  Error:
-    required:
-      - code
-      - message
-    properties:
-      code:
-        type: integer
-        format: int32
-      message:
-        type: string
+      id:
+        type: number
+        format: int
+        description: A unique id assigned to the object budget
+      object_table:
+        type: number
+        format: string
+        description: Name of the table the object budget is against. e.g, milestone
+      object_id or object:
+        type: number
+        format: int
+        description: The unique identifier assigned to the object the budget belongs to.
+      is_billable:
+        type: number
+        format: string
+        description: yes or no
+      service_time:
+        type: number
+        format: int
+      service_price:
+        type: number
+        format: double
+      service_price_subtotal:
+        type: number
+        format: double
+      expense_price:
+        type: number
+        format: double
+      material_price:
+        type: number
+        format: double
+      billable:
+        type: number
+        format: int
+      nonbillable:
+        type: number
+        format: int
+      logged:
+        type: number
+        format: int
+        description: Total of billable and nonbillable
+      charged:
+        type: number
+        format: double
+      service_time_estimate:
+        type: number
+        format: int
+      service_time_subtotal_estimate:
+        type: number
+        format: int
+      service_price_estimate:
+        type: number
+        format: double
+      service_price_subtotal_estimate:
+        type: number
+        format: double
+      remaining_subtotal:
+        type: number
+        format: int
+      billable_subtotal:
+        type: number
+        format: int
+      nonbillable_subtotal:
+        type: number
+        format: int
+      logged_subtotal:
+        type: number
+        format: int
+        description: Total of billable and nonbillable subtotal.
+      charged_subtotal:
+        type: number
+        format: double
+
+  objectBudgetResponse:
+    description: objectBudgetCountResponse
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          response:
+            $ref: '#/definitions/objectBudget'
+        required:
+          - response
+    # example:
+    #   response:
+    #     count: "32432"
+    #   meta:
+    #     status: "ok"
+    #     message: "Everything executed as expected."
+
+  objectBudgetListResponse:
+    description: objectBudgetCountResponse
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          response:
+            type: array
+            items:
+              $ref: '#/definitions/objectBudget'
+        required:
+          - response
+  #   example:
+  #     response:
+  #       count: "32432"
+  #     meta:
+  #       status: "ok"
+  #       message: "Everything executed as expected."
+
+  objectBudgetCountResponse:
+    description: objectBudgetCountResponse
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          response:
+            type: object
+            properties: 
+              count:
+                description: The docs say it's an int, but it returns a string...
+                type: string
+            required:
+              - count
+        required:
+          - response
+    example:
+      response:
+        count: "32432"
+      meta:
+        status: "ok"
+        message: "Everything executed as expected."
