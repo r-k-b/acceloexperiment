@@ -35,7 +35,7 @@ parameters:
     description: The page of the list to display. For example, 5 will display the fifth page. Each page contains 10 resources.
     required: false
     type: integer
-    
+
   limit:
     name: _limit
     in: query
@@ -44,18 +44,118 @@ parameters:
     type: integer
     default: 10
     maximum: 50
-    
+
   offset:
     name: _offset
     in: query
     description: |
-      The position in the list of resources to return from. 
+      The position in the list of resources to return from.
       For example, if you had 20 resources and requested an offset of 10. Resources 10 to 19 would be returned.
       Offset cannot be used in conjunction with _page.
     required: false
     type: integer
     default: 0
-    
+
+  activityFields:
+    name: _fields
+    in: query
+    description: Allows you to specify optional fields and linked objects to include in the response.
+    required: false
+    type: array
+    items:
+      type: string
+      collectionFormat: csv
+      # what, no allowMultiple?
+      enum:
+      - id
+      - subject
+      - parent
+      - parent_id
+      - thread
+      - thread_id
+      - against
+      - against_type
+      - against_id
+      - owner
+      - owner_type
+      - owner_id
+      - medium
+      - body
+      - visibility
+      - details
+      - message_id
+      - date_created
+      - date_started
+      - date_logged
+      - date_ended
+      - date_due
+      - date_updated
+      - staff
+      - rate
+      - rate_charged
+      - 'class'
+      - class_id
+      - task
+      - interacts
+      - nonbillable
+      - billable
+      - task_id
+      - priority
+      - priority_id
+
+  activityFilters:
+    name: _filters
+    in: query
+    description: You can filter the returned list using the _filters parameter.
+    required: false
+    type: array
+    items:
+      type: string
+      collectionFormat: csv
+      # what, no allowMultiple?
+      enum:
+      - owner_type
+      - type
+      - invitation
+      - read # eg: `read(no)` or `read(0)` or `read(n)`
+      - parent_id
+      - thread_id
+      - staff_id
+      - priority_id
+      - class_id
+      - task_id
+      - message_id
+      - owner_id
+      - visibility
+      - medium
+      - against_type # eg: `against_type(company,job)`. Only return activities against the given type.
+      - against_id # eg: `against_id(12,12)`. Only return activities against object with given ids.
+      - order_by_asc # eg: order_by_asc(date_ended). Enums: date_started, date_created, date_ended, date_logged, billable, nonbillable.
+      - order_by_desc # Same as order_by_asc but opposite direction
+      - date_created_before
+      - date_created_after
+      - date_started_before
+      - date_started_after
+      - date_logged_before
+      - date_logged_after
+      - date_ended_before
+      - date_ended_after
+      - max_id
+      - min_id
+      - <field_name>_greater_than(<value>),
+      - <field_name>_less_than(<value>),
+      - <field_name>_greater_than_or_equal(<value>),
+      - <field_name>_less_than_or_equal(<value>) # eg: `_filters=id_greater_than(5)`
+      # Enum for `<field_name>`:
+      # - id
+      # - thread
+      # - against_id
+      # - owner
+      # - staff
+      # - priority
+      # - class
+      # - task
+
   objectBudgetFields:
     name: _fields
     in: query
@@ -90,12 +190,32 @@ parameters:
       - charged_subtotal
 
 paths:
+  /activities:
+    get:
+      description: |
+        Returns an array of Activities.
+      operationId: list activities
+      externalDocs:
+        description: Official documentation.
+        url: https://affinitylive.jira.com/wiki/display/APIS/List+Activities
+      parameters:
+        - $ref: "#/parameters/page"
+        - $ref: "#/parameters/limit"
+        - $ref: "#/parameters/offset"
+        - $ref: "#/parameters/activityFields"
+        - $ref: "#/parameters/activityFilters"
+      responses:
+        200:
+          description: activityListResponse
+          schema:
+            $ref: '#/definitions/activityListResponse'
+
   /object_budgets:
     get:
       description: |
         Returns an array of objectBudgets.
-        
-        ⚠ Object budgets were introduced with the projects upgrade and are different from 
+
+        ⚠ Object budgets were introduced with the projects upgrade and are different from
         [the standard budgets.](https://affinitylive.jira.com/wiki/display/APIS/Budgets)
       operationId: findObjectBudgets
       externalDocs:
@@ -111,7 +231,7 @@ paths:
           description: objectBudgetListResponse
           schema:
             $ref: '#/definitions/objectBudgetListResponse'
-            
+
   /object_budgets/{id}:
     get:
       description: Find an object budget by its ID.
@@ -128,7 +248,7 @@ paths:
           description: objectBudget response
           schema:
             $ref: '#/definitions/objectBudgetResponse'
-            
+
   /object_budgets/count:
     get:
       description: Returns the number of object budgets on the deployment.
@@ -140,7 +260,7 @@ paths:
             $ref: '#/definitions/objectBudgetCountResponse'
 
 definitions:
-        
+
   Response:
     type: object
     description: Default API response
@@ -170,6 +290,36 @@ definitions:
       meta:
         status: "ok"
         message: "Everything executed as expected."
+
+  activity:
+    properties:
+      id:
+        type: number
+        format: int
+        description: A unique id assigned to the object budget
+      subject:
+        type: string
+    required:
+      - id
+      - subject
+
+  activityListResponse:
+    description: activity list response
+    allOf:
+      - $ref: '#/definitions/Response'
+      - properties:
+          response:
+            type: array
+            items:
+              $ref: '#/definitions/activity'
+        required:
+          - response
+  #   example:
+  #     response:
+  #       count: "32432"
+  #     meta:
+  #       status: "ok"
+  #       message: "Everything executed as expected."
 
   objectBudget:
     properties:
@@ -287,7 +437,7 @@ definitions:
       - properties:
           response:
             type: object
-            properties: 
+            properties:
               count:
                 description: The docs say it's an int, but it returns a string...
                 type: string
