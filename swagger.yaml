@@ -258,6 +258,94 @@ paths:
           description: count all objectBudgets response
           schema:
             $ref: '#/definitions/objectBudgetCountResponse'
+  
+  /staff/whoami:
+    get:
+      description: Returns basic info about the current user.
+      responses:
+        200:
+          description: Return staff ID, first name, last name.
+          examples:
+            meta:
+              message: Everything executed as expected.
+              more_info: https://affinitylive.jira.com/wiki/display/APIS/Status+Codes#ok
+              status: ok
+            response:
+              firstname: Robert
+              id: '23'
+              surname: Bell
+  
+  /tokeninfo:
+    get:
+      description: Returns info about the access token used to access this endpoint.
+      responses:
+        200:
+          description: Return token info.
+          examples:
+            meta:
+              message: Everything executed as expected.
+              more_info: https://affinitylive.jira.com/wiki/display/APIS/Status+Codes#ok
+              status: ok
+            response:
+              deployment: example
+              email: Robert@example.com
+              expiry_date: '1412345678'
+              firstname: Robert
+              locale:
+                currency:
+                  symbol: "$"
+                timezone: Australia/Sydney
+              staff_id: '23'
+              surname: Bell
+  
+  /user:
+    get:
+      description: Returns detailed info about the current user.
+      responses:
+        200:
+          description: Return detailed user info.
+          examples:
+            meta:
+              message: Everything executed as expected.
+              more_info: https://affinitylive.jira.com/wiki/display/APIS/Status+Codes#ok
+              status: ok
+            response:
+              email: Robert@example.com
+              fax: ''
+              financial_level: all
+              firstname: Robert
+              id: '23'
+              locale:
+                currency:
+                  symbol: "$"
+                timezone: "Australia/Sydney"
+              mobile: "+61234567890"
+              phone: "09 1234 5678"
+              position: Developer
+              surname: Bell
+              timezone: "Australia/Sydney"
+              title: 
+              user_access:
+                account_invoice:
+                  add: 1
+                  admin: 1
+                  dashboard: ''
+                  manages: 0
+                  view: 1
+                activity:
+                  add: 1
+                  admin: 1
+                  dashboard: 1
+                  manages: 0
+                  view: 1
+              user_titles:
+                account_invoice:
+                  plural: Invoices
+                  singular: Invoice
+                account_purchase:
+                  plural: Purchases
+                  singular: Purchase
+              username: robert@example.com
 
 definitions:
 
