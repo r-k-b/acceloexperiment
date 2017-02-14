@@ -29,6 +29,14 @@ produces:
   - text/x-yaml
 
 parameters:
+  id:
+    name: id
+    in: path
+    description: foo
+    required: true
+    type: integer
+    format: int64
+
   page:
     name: _page
     in: query
@@ -211,6 +219,64 @@ paths:
           description: activityListResponse
           schema:
             $ref: '#/definitions/activityListResponse'
+            
+  /activities/count:
+    get:
+      description: Total number of activities.
+      responses:
+        200:
+          description: Example response TBA
+
+  /activities/{id}:
+    get:
+      description: Specific activity identified by its id.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+          
+    put:
+      description: Update an activity.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+          
+    delete:
+      description: Remove an activity.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+      
+
+  /activities/{id}/interacts:
+    get:
+      description: Recipients against a given activity.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /activities/{id}/interacts/count:
+    get:
+      description: Count the number of recipients against an activity.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /activities/allocations:
+    get:
+      description: Allocation (billable & non-billable) information for a selected group of activities.
+      responses:
+        200:
+          description: Example response TBA
 
   /object_budgets:
     get:
