@@ -89,7 +89,7 @@ parameters:
       - date_logged
       - date_ended
       - date_due
-      - date_updated
+      - date_modified
       - staff
       - rate
       - rate_charged
@@ -130,7 +130,7 @@ parameters:
       - medium
       - against_type # eg: `against_type(company,job)`. Only return activities against the given type.
       - against_id # eg: `against_id(12,12)`. Only return activities against object with given ids.
-      - order_by_asc # eg: order_by_asc(date_ended). Enums: date_started, date_created, date_ended, date_logged, billable, nonbillable.
+      - order_by_asc # eg: order_by_asc(date_ended). Enums: date_started, date_created, date_ended, date_logged, date_modified, billable, nonbillable.
       - order_by_desc # Same as order_by_asc but opposite direction
       - date_created_before
       - date_created_after
@@ -140,6 +140,8 @@ parameters:
       - date_logged_after
       - date_ended_before
       - date_ended_after
+      - date_modified_before
+      - date_modified_after
       - max_id
       - min_id
       - <field_name>_greater_than(<value>),
