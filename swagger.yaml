@@ -32,6 +32,45 @@ parameters:
   id:
     name: id
     in: path
+    required: true
+    type: integer
+    format: int64
+    
+  profileFieldId:
+    name: profileFieldId
+    in: path
+    required: true
+    type: integer
+    format: int64
+    
+  profileValueId: # is this actually different from `profileFieldId`?
+    name: profileValueId
+    in: path
+    required: true
+    type: integer
+    format: int64
+    
+  progressionId:
+    name: progressionId
+    in: path
+    required: true
+    type: integer
+    format: int64
+
+  objectType:
+    name: object_type
+    in: path
+    description: foo
+    required: true
+    type: string
+    # todo: enums for object_type
+    # enum:
+    #  - foo
+    #  - bar
+
+  objectId:
+    name: object_id
+    in: path
     description: foo
     required: true
     type: integer
@@ -219,7 +258,7 @@ paths:
           description: activityListResponse
           schema:
             $ref: '#/definitions/activityListResponse'
-            
+
   /activities/count:
     get:
       description: Total number of activities.
@@ -235,7 +274,7 @@ paths:
       responses:
         200:
           description: Example response TBA
-          
+
     put:
       description: Update an activity.
       parameters:
@@ -243,7 +282,7 @@ paths:
       responses:
         200:
           description: Example response TBA
-          
+
     delete:
       description: Remove an activity.
       parameters:
@@ -251,7 +290,7 @@ paths:
       responses:
         200:
           description: Example response TBA
-      
+
 
   /activities/{id}/interacts:
     get:
@@ -274,6 +313,180 @@ paths:
   /activities/allocations:
     get:
       description: Allocation (billable & non-billable) information for a selected group of activities.
+      responses:
+        200:
+          description: Example response TBA
+
+  /addresses:
+    get:
+      description: Returns a list of addresses.
+      responses:
+        200:
+          description: Example response TBA
+    post:
+      description: Creates a new address and returns it.
+      responses:
+        200:
+          description: Example response TBA
+
+  /{object_type}/{object_id}/addresses:
+    get:
+      description: Returns a list of addresses by a given object.
+      parameters:
+        - $ref: "#/parameters/objectType"
+        - $ref: "#/parameters/objectId"
+      responses:
+        200:
+          description: Example response TBA
+    post:
+      description: Creates a new address against a given object and returns it.
+      parameters:
+        - $ref: "#/parameters/objectType"
+        - $ref: "#/parameters/objectId"
+      responses:
+        200:
+          description: Example response TBA
+
+  /addresses/{id}:
+    get:
+      description: Returns an address identified with address_id
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+    put:
+      description: Updates and returns an addresses identified by id.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /addresses/count:
+    get:
+      description: Returns the number of addresses found in system.
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations:
+    get:
+      description: Returns a list of Affiliations.
+      responses:
+        200:
+          description: Example response TBA
+    post:
+      description: Creates a new affiliation.
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/count:
+    get:
+      description: Returns the total number of affiliations.
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/newest:
+    get:
+      description: Returns a list of affiliations ordered by date_modified descending.
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}:
+    get:
+      description: Returns an affiliation identified by its id.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+    post:
+      description: Updates an affiliation identified by its id.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+    delete:
+      description: Removes an affiliation identified by its id.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}/status:
+    get:
+      description: Returns an affiliation's status.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}/profiles/fields/{profileFieldId}:
+    post:
+      description: Creates a profile value for an affiliation.
+      parameters:
+        - $ref: "#/parameters/id"
+        - $ref: "#/parameters/profileFieldId"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}/profiles/values:
+    get:
+      description: Returns an array of profile values for the affiliation.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}/profiles/values/{profileValueId}:
+    put:
+      description: Update an existing profile value for the affiliation.
+      parameters:
+        - $ref: "#/parameters/id"
+        - $ref: "#/parameters/profileValueId"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}/progressions:
+    get:
+      description: Returns an array of available progressions for the affiliation.
+      parameters:
+        - $ref: "#/parameters/id"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/{id}/progressions/{progressionId}/auto:
+    put:
+      description: Runs a status update for the given progression on the given affiliation.
+      parameters:
+        - $ref: "#/parameters/id"
+        - $ref: "#/parameters/progressionId"
+      responses:
+        200:
+          description: Example response TBA
+    post:
+      description: Runs a status update for the given progression on the given affiliation.
+      parameters:
+        - $ref: "#/parameters/id"
+        - $ref: "#/parameters/progressionId"
+      responses:
+        200:
+          description: Example response TBA
+
+  /affiliations/profiles/fields:
+    get:
+      description: Returns an array of profile fields for affiliation.
       responses:
         200:
           description: Example response TBA
