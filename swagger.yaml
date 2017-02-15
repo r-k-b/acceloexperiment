@@ -35,21 +35,21 @@ parameters:
     required: true
     type: integer
     format: int64
-    
+
   profileFieldId:
     name: profileFieldId
     in: path
     required: true
     type: integer
     format: int64
-    
+
   profileValueId: # is this actually different from `profileFieldId`?
     name: profileValueId
     in: path
     required: true
     type: integer
     format: int64
-    
+
   progressionId:
     name: progressionId
     in: path
@@ -487,6 +487,29 @@ paths:
   /affiliations/profiles/fields:
     get:
       description: Returns an array of profile fields for affiliation.
+      responses:
+        200:
+          description: Example response TBA
+
+  /budgets:
+    get:
+      description: Returns a list of budgets.
+      responses:
+        200:
+          description: Example response TBA
+
+  /budgets/count:
+    get:
+      description: Returns the number of budgets.
+      responses:
+        200:
+          description: Example response TBA
+
+  /budgets/{id}:
+    get:
+      description: Returns a budget identified by its id.
+      parameters:
+        - $ref: "#/parameters/id"
       responses:
         200:
           description: Example response TBA
